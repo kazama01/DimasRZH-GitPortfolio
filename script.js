@@ -416,7 +416,11 @@ function playSkillGlitch(element) {
     let frameCount = 0;
 
     // --- Block Spawning Logic ---
-    const blockCount = Math.floor(Math.random() * 16) + 50; // 5 to 20
+    const blockCount = Math.floor(Math.random() * 16) + 5; // 50 to 65
+
+    // Optimization: Batch DOM insertions
+    const fragment = document.createDocumentFragment();
+
     for (let i = 0; i < blockCount; i++) {
         const block = document.createElement('div');
         block.classList.add('glitch-block');
@@ -449,13 +453,15 @@ function playSkillGlitch(element) {
             block.style.mixBlendMode = 'overlay';
         }
 
-        element.appendChild(block);
+        fragment.appendChild(block);
 
         // Remove block at random time during animation
         setTimeout(() => {
             block.remove();
         }, Math.random() * duration);
     }
+
+    element.appendChild(fragment);
 
 
     function animate(currentTime) {
