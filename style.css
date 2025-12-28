@@ -1,0 +1,972 @@
+:root {
+    --bg-color: #050505;
+    --text-primary: #ffffff;
+    --text-secondary: #888888;
+    --accent-red: #ff2a2a;
+    /* Japanese Red */
+    --accent-cyan: #00f0ff;
+    /* Cyber Cyan */
+    --accent-dark: #1a1a1a;
+    --font-main: 'Outfit', sans-serif;
+    --font-jp: 'Noto Sans JP', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+    --sidebar-width: 80px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+/* --- Ambient Background: Mecha Grid --- */
+body::before {
+    content: '';
+    position: fixed;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    /* Cyan Grid */
+    background-image:
+        linear-gradient(rgba(0, 240, 255, 0.25) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 0, 72, 0.5) 1px, transparent 1px);
+    background-size: 150px 150px;
+    z-index: 0;
+    pointer-events: none;
+    transform-origin: center;
+    animation: mecha-grid-spin 120s linear infinite;
+    /* Vignette to fade edges/focus center */
+    mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 60%);
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 60%);
+}
+
+/* --- Gradient Scanline Pulse on Grid --- */
+body::after {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg,
+            transparent 45%,
+            rgba(0, 240, 255, 0.1) 50%,
+            transparent 55%);
+    z-index: 1;
+    pointer-events: none;
+    transform: rotate(45deg);
+    animation: grid-scan 10s linear infinite;
+    mix-blend-mode: overlay;
+}
+
+@keyframes grid-scan {
+    0% {
+        transform: translateY(-100%) rotate(45deg);
+    }
+
+    100% {
+        transform: translateY(100%) rotate(45deg);
+    }
+}
+
+@keyframes mecha-grid-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* --- Layout --- */
+.content {
+    margin-left: var(--sidebar-width);
+    padding: 2rem;
+    position: relative;
+    z-index: 2;
+    max-width: 1400px;
+}
+
+/* --- Overlay Effects --- */
+/* --- Overlay Effects --- */
+.noise-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0.03;
+    /* Reduced from 0.05 for clarity */
+}
+
+/* SVG Glitch Class */
+.glitch-active {
+    filter: url(#glitch-filter);
+    will-change: filter;
+    /* Ensure hardware acceleration for smoother distortion */
+    transform: translateZ(0);
+}
+
+.scanline {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.2) 50%);
+    /* Reduced opacity from 0.5 */
+    background-size: 100% 4px;
+    z-index: 98;
+    pointer-events: none;
+}
+
+/* ... (rest of CSS) ... */
+
+.timeline-company {
+    color: var(--accent-cyan);
+    margin-bottom: 0.8rem;
+}
+
+/* Current Job Highlight */
+.timeline-item.current-job {
+    border-left: 2px solid var(--accent-cyan);
+    padding-left: 1.9rem;
+    /* Compensate for border */
+    background: linear-gradient(90deg, rgba(0, 240, 255, 0.05) 0%, transparent 100%);
+}
+
+.timeline-item.current-job::before {
+    background: var(--accent-cyan);
+    box-shadow: 0 0 10px var(--accent-cyan);
+    border-color: var(--accent-cyan);
+}
+
+#bgCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    opacity: 0.4;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: var(--sidebar-width);
+    background: var(--accent-dark);
+    border-right: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 0;
+    z-index: 100;
+}
+
+.logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.logo .kanji {
+    color: var(--accent-red);
+    font-family: var(--font-jp);
+    font-size: 1.2rem;
+    margin-bottom: 0.2rem;
+}
+
+.logo .eng {
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    padding: 1rem 0.5rem;
+    transition: all 0.3s ease;
+    border-left: 2px solid transparent;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--accent-cyan);
+    border-left: 2px solid var(--accent-cyan);
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}
+
+.socials {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.socials a {
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    transition: color 0.3s;
+}
+
+.socials a:hover {
+    color: var(--accent-red);
+}
+
+/* --- Sections --- */
+.section {
+    min-height: 100vh;
+    padding: 4rem 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.section-header {
+    margin-bottom: 4rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 1rem;
+    display: flex;
+    align-items: flex-end;
+}
+
+.vertical-text {
+    font-family: var(--font-mono);
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -2px;
+    position: relative;
+    padding-left: 1rem;
+    border-left: 4px solid var(--accent-red);
+}
+
+.jp-sub {
+    font-family: var(--font-jp);
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-left: 1rem;
+    font-weight: 100;
+}
+
+/* --- Hero --- */
+.hero {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.hero-content {
+    max-width: 600px;
+}
+
+.glitch {
+    font-size: 5rem;
+    font-weight: 900;
+    line-height: 1;
+    position: relative;
+    color: var(--text-primary);
+}
+
+.glitch::before,
+.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-color);
+}
+
+.glitch::before {
+    left: 2px;
+    text-shadow: -2px 0 var(--accent-red);
+    clip: rect(24px, 550px, 90px, 0);
+    animation: glitch-anim-2 3s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+    left: -2px;
+    text-shadow: -2px 0 var(--accent-cyan);
+    clip: rect(85px, 550px, 140px, 0);
+    animation: glitch-anim 2.5s infinite linear alternate-reverse;
+}
+
+.sub-glitch {
+    margin: 1.5rem 0;
+    font-family: var(--font-mono);
+    color: var(--accent-cyan);
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+}
+
+.bio-text {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    max-width: 500px;
+    margin-bottom: 2rem;
+}
+
+.cyber-btn {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background: transparent;
+    border: 1px solid var(--text-primary);
+    color: var(--text-primary);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.cyber-btn:hover {
+    background: var(--text-primary);
+    color: var(--bg-color);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+.cyber-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+    border-color: #555;
+    color: #555;
+}
+
+/* --- Projects Grid --- */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.project-card {
+    background: rgba(20, 20, 20, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Hidden initially for Glitch Reveal */
+    opacity: 0;
+    transform: none;
+}
+
+.project-card:hover {
+    border-color: var(--accent-cyan);
+    transform: translateY(-5px);
+}
+
+#curtains-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.glitch-block {
+    position: absolute;
+    display: block;
+    z-index: 20;
+    /* High z-index to block */
+    pointer-events: none;
+}
+
+.project-media {
+    position: relative;
+    aspect-ratio: 16/9;
+    background: #000;
+    overflow: hidden;
+}
+
+/* Hide original image but keep it for layout/curtains reference */
+.project-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+}
+
+.project-media iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    position: relative;
+    z-index: 20;
+    /* Above shader */
+}
+
+.play-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity 0.3s;
+    cursor: pointer;
+    z-index: 10;
+    /* Above shader */
+}
+
+.project-card:hover .play-overlay {
+    opacity: 1;
+}
+
+.play-btn {
+    font-size: 3rem;
+    color: var(--accent-red);
+    text-shadow: 0 0 15px var(--accent-red);
+}
+
+.project-info {
+    padding: 1.5rem;
+}
+
+.project-cat {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent-cyan);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.project-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+}
+
+.project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.tag {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #888;
+    font-family: var(--font-mono);
+}
+
+/* --- Skills --- */
+.skills-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 3rem;
+}
+
+.skill-category h3 {
+    font-family: var(--font-mono);
+    color: var(--accent-red);
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--accent-dark);
+    padding-bottom: 0.5rem;
+}
+
+.skill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.skill-item {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 2px solid var(--accent-cyan);
+    font-size: 0.9rem;
+    transition: background 0.3s;
+}
+
+.skill-item:hover {
+    background: rgba(0, 240, 255, 0.1);
+}
+
+/* --- Timeline --- */
+.timeline {
+    position: relative;
+    border-left: 2px solid #333;
+    margin-left: 1rem;
+}
+
+.timeline-item {
+    margin-bottom: 3rem;
+    padding-left: 2rem;
+    position: relative;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 0.5rem;
+    width: 10px;
+    height: 10px;
+    background: var(--bg-color);
+    border: 2px solid var(--accent-red);
+    transform: rotate(45deg);
+}
+
+.timeline-date {
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-role {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.timeline-company {
+    color: var(--accent-cyan);
+    margin-bottom: 0.8rem;
+}
+
+/* --- Mobile Queries --- */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: 60px;
+        flex-direction: row;
+        padding: 0 1.5rem;
+        bottom: 0;
+        top: auto;
+        border-right: none;
+        border-top: 1px solid #333;
+    }
+
+    .nav-links {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+
+    .nav-links a {
+        writing-mode: horizontal-tb;
+        transform: none;
+        padding: 0.5rem;
+        font-size: 0.7rem;
+    }
+
+    .logo .eng {
+        writing-mode: horizontal-tb;
+        transform: none;
+        display: none;
+    }
+
+    .content {
+        margin-left: 0;
+        margin-bottom: 60px;
+        padding: 1.5rem;
+    }
+
+    .glitch {
+        font-size: 3rem;
+    }
+
+    .hero {
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .vertical-text {
+        font-size: 2rem;
+    }
+}
+
+/* Animations */
+@keyframes glitch-anim {
+    0% {
+        clip: rect(20px, 9999px, 80px, 0);
+    }
+
+    10% {
+        clip: rect(50px, 9999px, 120px, 0);
+    }
+
+    20% {
+        clip: rect(10px, 9999px, 80px, 0);
+    }
+
+    100% {
+        clip: rect(0, 0, 0, 0);
+    }
+}
+
+@keyframes glitch-anim-2 {
+    0% {
+        clip: rect(60px, 9999px, 100px, 0);
+    }
+
+    10% {
+        clip: rect(10px, 9999px, 50px, 0);
+    }
+
+    20% {
+        clip: rect(80px, 9999px, 150px, 0);
+    }
+
+    100% {
+        clip: rect(0, 0, 0, 0);
+    }
+}
+
+/* --- Reveal Animations --- */
+.reveal {
+    transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform, opacity;
+}
+
+/* Skills: Zoom In */
+.reveal-zoom-in {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.reveal-zoom-in.active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Timeline: Slide In from Left */
+.reveal-slide-in {
+    opacity: 0;
+    transform: translateX(-30px);
+}
+
+.reveal-slide-in.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* --- Staggered Children --- */
+/* Common base if needed, but we redefine for specificity */
+
+/* Original Generic Stagger (Keep for fallbacks) */
+.stagger-parent .stagger-item {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease-out;
+}
+
+.stagger-parent.active .stagger-item {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Stagger Delays - Applied to ALL stagger types */
+/* REFACTORED: Use animation-delay for projects/history, transition-delay for generic */
+
+.stagger-parent.active .stagger-item:nth-child(1) {
+    transition-delay: 0.1s;
+}
+
+.stagger-parent.active .stagger-item-project:nth-child(1),
+.stagger-parent.active .stagger-item-history:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.stagger-parent.active .stagger-item:nth-child(2) {
+    transition-delay: 0.2s;
+}
+
+.stagger-parent.active .stagger-item-project:nth-child(2),
+.stagger-parent.active .stagger-item-history:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.stagger-parent.active .stagger-item:nth-child(3) {
+    transition-delay: 0.3s;
+}
+
+.stagger-parent.active .stagger-item-project:nth-child(3),
+.stagger-parent.active .stagger-item-history:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.stagger-parent.active .stagger-item:nth-child(4) {
+    transition-delay: 0.4s;
+}
+
+.stagger-parent.active .stagger-item-project:nth-child(4),
+.stagger-parent.active .stagger-item-history:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.stagger-parent.active .stagger-item:nth-child(5) {
+    transition-delay: 0.5s;
+}
+
+.stagger-parent.active .stagger-item-project:nth-child(5),
+.stagger-parent.active .stagger-item-history:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.stagger-parent.active .stagger-item:nth-child(6) {
+    transition-delay: 0.6s;
+}
+
+.stagger-parent.active .stagger-item-project:nth-child(6),
+.stagger-parent.active .stagger-item-history:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+.stagger-parent.active .stagger-item:nth-child(7) {
+    transition-delay: 0.65s;
+}
+
+.stagger-parent.active .stagger-item-project:nth-child(7),
+.stagger-parent.active .stagger-item-history:nth-child(7) {
+    animation-delay: 0.65s;
+}
+
+.stagger-parent.active .stagger-item:nth-child(8) {
+    transition-delay: 0.7s;
+}
+
+.stagger-parent.active .stagger-item-project:nth-child(8),
+.stagger-parent.active .stagger-item-history:nth-child(8) {
+    animation-delay: 0.7s;
+}
+
+.stagger-parent.active .stagger-item:nth-child(9) {
+    transition-delay: 0.75s;
+}
+
+.stagger-parent.active .stagger-item-project:nth-child(9),
+.stagger-parent.active .stagger-item-history:nth-child(9) {
+    animation-delay: 0.75s;
+}
+
+.stagger-parent.active .stagger-item:nth-child(10) {
+    transition-delay: 0.8s;
+}
+
+.stagger-parent.active .stagger-item-project:nth-child(10),
+.stagger-parent.active .stagger-item-history:nth-child(10) {
+    animation-delay: 0.8s;
+}
+
+
+
+/* Custom Glitch Reveal for Skills */
+.custom-glitch-reveal {
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.stagger-parent.active .custom-glitch-reveal {
+    opacity: 1;
+    transform: translateX(0);
+    animation: flash-cyan 0.3s ease-out forwards;
+}
+
+@keyframes flash-cyan {
+    0% {
+        background: var(--accent-cyan);
+        color: #000;
+        box-shadow: 0 0 15px var(--accent-cyan);
+    }
+
+    50% {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+    }
+
+    100% {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+    }
+}
+
+/* --- SHADER-LIKE REVEAL: Cyber Construct --- */
+.cyber-construct {
+    position: relative;
+    opacity: 0;
+    /* Simulate a 'not yet rendered' state */
+    transform: scale(0.98);
+    filter: grayscale(100%) brightness(0.5);
+    transition: all 0.1s;
+    /* Instant snap after anim */
+}
+
+.cyber-construct.active {
+    opacity: 1;
+    transform: scale(1);
+    filter: grayscale(0%) brightness(1);
+    /* The "Shader" Mask Effect */
+    animation: cyber-render 0.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+/* scanline overlay during reveal */
+/* Scanline bar removed as per user request */
+
+
+
+@keyframes scan-sweep {
+    0% {
+        top: 0;
+        opacity: 1;
+        width: 0;
+    }
+
+    50% {
+        width: 100%;
+        opacity: 1;
+    }
+
+    90% {
+        top: 100%;
+        opacity: 0;
+    }
+
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+/* --- HORIZONTAL VARIANT (For History) --- */
+/* Wipes Top -> Bottom (cyber-render-vertical) */
+/* Scanline moves Left -> Right (scan-sweep-horizontal) */
+
+.cyber-construct-horizontal {
+    position: relative;
+    opacity: 0;
+    transform: scale(0.98);
+    filter: grayscale(100%) brightness(0.5);
+    transition: all 0.1s;
+}
+
+.cyber-construct-horizontal.active {
+    opacity: 1;
+    transform: scale(1);
+    filter: grayscale(0%) brightness(1);
+    animation: cyber-render-vertical 0.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+/* Scanline bar removed as per user request */
+
+
+
+@keyframes scan-sweep-horizontal {
+    0% {
+        left: 0;
+        opacity: 1;
+        height: 0;
+        /* Match sweep growth? OR just sweep across? */
+    }
+
+    /* Let's make it sweep across fully formed like the vertical one sweeps down */
+    0% {
+        left: 0;
+        width: 0;
+        /* Grow width first? No, scanlines usually fixed width moving across. */
+        /* Replicating vertical logic: top starts 0, goes to 100% */
+        left: 0;
+        width: 100%;
+        /* Wait, vertical one GROWS width from 0 to 100%? Let's check 'scan-sweep' */
+        /* scan-sweep: top 0, width 0 -> width 100% -> top 100% */
+        /* It grows OUT horizontally while moving down? That's what existing code says: width 0 -> 100% */
+        /* Let's mimic that: Height 0 -> 100% while moving L -> R? */
+        /* Or just move L -> R? */
+        /* Let's try simple sweep L -> R */
+        left: 0;
+        opacity: 1;
+        /* Let's match existing logic: Expands perpendicular to movement? */
+        height: 0;
+    }
+
+    50% {
+        height: 100%;
+        opacity: 1;
+    }
+
+    90% {
+        left: 100%;
+        opacity: 0;
+    }
+
+    100% {
+        left: 100%;
+        opacity: 0;
+    }
+}
+
+/* --- Text Shuffle Effect --- */
+.shuffle-reveal {
+    opacity: 0;
+    /* JS handles reveal */
+}
+
+.shuffle-reveal.active {
+    opacity: 1;
+}
+
+/* Optional: Ensure monospace for better shuffle effect, though design uses variable */
+/* Optional: Ensure monospace for better shuffle effect, though design uses variable */
+.timeline-date,
+.timeline-role,
+.timeline-company {
+    /* font-family: 'Space Mono', monospace;  Already set in design mainly */
+}
+
+/* Initially hide text to prevent flash before scramble */
+.shuffle-target {
+    opacity: 0;
+}
+
+.dud {
+    color: var(--accent-red);
+    opacity: 0.7;
+}

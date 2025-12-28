@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Admin | Data Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #111;
+            --fg: #eee;
+            --accent: #00f0ff;
+            --panel: #222;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: 'Space Mono', monospace;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        h1 {
+            color: var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #888;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.8rem;
+            background: #000;
+            border: 1px solid #333;
+            color: white;
+            font-family: inherit;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        button {
+            padding: 1rem 2rem;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        pre {
+            background: #000;
+            padding: 1rem;
+            border: 1px solid #333;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            color: #0f0;
+        }
+
+        .preview-card {
+            border: 1px solid var(--accent);
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .project-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 2rem;
+        }
+
+        .project-list li {
+            background: var(--panel);
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-sm {
+            padding: 0.2rem 0.5rem;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        .btn-danger {
+            background: #ff2a2a;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="editor">
+        <h1>PROJECT EDITOR</h1>
+
+        <div class="form-group">
+            <label>Project Title</label>
+            <input type="text" id="pTitle" placeholder="e.g., Neon Shader">
+        </div>
+
+        <div class="form-group">
+            <label>Category</label>
+            <input type="text" id="pCategory" placeholder="e.g., VFX">
+        </div>
+
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="pDesc" rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Tech Stack (comma separated)</label>
+            <input type="text" id="pTech" placeholder="Unity, HLSL, C#">
+        </div>
+
+        <div class="form-group">
+            <label>Video URL (YouTube/Drive)</label>
+            <input type="text" id="pVideo" placeholder="https://youtube.com/watch?v=...">
+        </div>
+
+        <div class="form-group">
+            <label>Image URL (Fallback)</label>
+            <input type="text" id="pImage" placeholder="assets/..." value="assets/placeholder.jpg">
+        </div>
+
+        <button onclick="addProject()">ADD TO LIST</button>
+        <button onclick="generateJSON()"
+            style="background:none; border: 1px solid var(--accent); color: var(--accent)">GENERATE JSON code</button>
+
+        <ul class="project-list" id="projectList">
+            <!-- List items -->
+        </ul>
+    </div>
+
+    <div class="output">
+        <h1>JSON OUTPUT</h1>
+        <p>Copy this into your <code>data.js</code> file.</p>
+        <pre id="jsonOutput">// JSON will appear here...</pre>
+    </div>
+
+    <script>
+        // Start with existing data structure skeleton
+        let projects = [];
+
+        function addProject() {
+            const project = {
+                id: document.getElementById('pTitle').value.toLowerCase().replace(/\s+/g, '-'),
+                title: document.getElementById('pTitle').value,
+                category: document.getElementById('pCategory').value,
+                description: document.getElementById('pDesc').value,
+                tech: document.getElementById('pTech').value.split(',').map(s => s.trim()),
+                video: document.getElementById('pVideo').value,
+                image: document.getElementById('pImage').value,
+                link: ""
+            };
+
+            projects.push(project);
+            renderList();
+            clearForm();
+        }
+
+        function renderList() {
+            const list = document.getElementById('projectList');
+            list.innerHTML = '';
+            projects.forEach((p, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${p.title}</span>
+                    <div>
+                        <button class="btn-sm btn-danger" onclick="removeProject(${index})">X</button>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function removeProject(index) {
+            projects.splice(index, 1);
+            renderList();
+        }
+
+        function clearForm() {
+            document.getElementById('pTitle').value = '';
+            document.getElementById('pCategory').value = '';
+            document.getElementById('pDesc').value = '';
+            document.getElementById('pTech').value = '';
+            document.getElementById('pVideo').value = '';
+        }
+
+        function generateJSON() {
+            const json = JSON.stringify(projects, null, 4);
+            const output = `projects: ${json}`;
+            document.getElementById('jsonOutput').textContent = output;
+        }
+    </script>
+</body>
+
+</html>

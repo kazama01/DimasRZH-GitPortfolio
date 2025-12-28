@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dimas Tech Art | Portfolio</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;400;700;900&family=Outfit:wght@300;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="noise-overlay"></div>
+    <div class="scanline"></div>
+
+    <!-- Background Canvas -->
+    <canvas id="bgCanvas"></canvas>
+
+    <nav class="sidebar">
+        <div class="logo">
+            <span class="kanji">技術</span>
+            <span class="eng">DIMAS</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#hero" class="active" data-text="HOME">HOME</a></li>
+            <li><a href="#projects" data-text="PROJECTS">PROJECTS</a></li>
+            <li><a href="#skills" data-text="SKILLS">SKILLS</a></li>
+            <li><a href="#experience" data-text="EXP">EXP</a></li>
+
+        </ul>
+        <div class="socials">
+            <a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" target="_blank"><i class="fas fa-envelope"></i></a>
+        </div>
+    </nav>
+
+    <main class="content">
+        <!-- Hero Section -->
+        <section id="hero" class="section hero">
+            <div class="hero-content">
+                <div class="glitch-wrapper">
+                    <h1 class="glitch" data-text="TECHNICAL ARTIST">TECHNICAL ARTIST</h1>
+                </div>
+                <div class="sub-glitch">
+                    <span class="jp-text">シェーダー開発 // VFX //最適化</span>
+                </div>
+                <p class="bio-text"></p>
+                <a href="#projects" class="cyber-btn">
+                    <span class="btn-content">VIEW PROTOCOLS <i class="fas fa-arrow-right"></i></span>
+                    <span class="btn-glitch"></span>
+                </a>
+            </div>
+            <div class="hero-visual">
+                <div class="circle-graphic"></div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="section projects">
+            <div class="section-header">
+                <h2 class="vertical-text">PROJECTS<span class="jp-sub">プロジェクト</span></h2>
+            </div>
+            <div class="projects-grid" id="projects-container">
+                <!-- Projects injected by JS -->
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="section skills">
+            <div class="section-header">
+                <h2 class="vertical-text">SKILLS<span class="jp-sub">能力</span></h2>
+            </div>
+            <div class="skills-container" id="skills-container">
+                <!-- Skills injected by JS -->
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience" class="section experience">
+            <div class="section-header">
+                <h2 class="vertical-text">HISTORY<span class="jp-sub">経歴</span></h2>
+            </div>
+            <div class="timeline" id="experience-container">
+                <!-- Experience injected by JS -->
+            </div>
+        </section>
+
+
+    </main>
+
+    <!-- SVG Glitch Filter Definition -->
+    <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1"
+        xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <filter id="glitch-filter" x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="noise" seed="0" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="30" xChannelSelector="R"
+                    yChannelSelector="G" />
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- <script src="curtains.min.js"></script> REMOVED: Switching to SVG Filter -->
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
